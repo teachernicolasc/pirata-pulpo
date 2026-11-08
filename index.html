@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las Aventuras del Pulpo Bernabé - Cuento & Lectoescritura Inicial</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            400: '#38bdf8',
+                            600: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        sand: {
+                            100: '#fef3c7',
+                            300: '#fde047',
+                            500: '#eab308',
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #e0f2fe;
+            background-image: radial-gradient(#38bdf8 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+            user-select: none;
+        }
+
+        h1, h2, h3, button, label, input, .font-title {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Puzzle Slots */
+        .puzzle-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            height: 44px;
+            border: 3px dashed #0284c7;
+            background-color: #f0f9ff;
+            border-radius: 16px;
+            padding: 0 10px;
+            margin: 0 4px;
+            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+
+        .puzzle-slot.filled {
+            border-style: solid;
+            background-color: #fef3c7;
+            border-color: #eab308;
+            color: #854d0e;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Casillas Letra por Letra */
+        .letter-box {
+            width: 44px;
+            height: 52px;
+            border: 3px solid #0284c7;
+            background-color: #ffffff;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0c4a6e;
+            box-shadow: 0 3px 0 #0284c7;
+        }
+
+        .letter-box.filled {
+            background-color: #fef3c7;
+            border-color: #eab308;
+            color: #854d0e;
+            box-shadow: 0 3px 0 #ca8a04;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(-6px); }
+            50% { transform: translateY(6px); }
+        }
+        .animate-float {
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printable-book, #printable-book * { visibility: visible; }
+            #printable-book { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between selection:bg-amber-200">
+
+    <!-- HEADER SUPERIOR -->
+    <header class="bg-white/95 backdrop-blur border-b-4 border-cyan-400 p-3 md:p-4 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showMap()">
+                <div class="w-11 h-11 bg-cyan-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md transform -rotate-6 animate-float">
+                    🐙
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-cyan-800 leading-none">Las Aventuras de Bernabé</h1>
+                    <span class="text-xs text-amber-600 font-bold tracking-wide uppercase">Lectoescritura Inicial &bull; 2° Básico</span>
+                </div>
+            </div>
+
+            <!-- Contador de Estrellas del Mapa -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1.5 bg-amber-100 px-3 py-1.5 rounded-full border-2 border-amber-300">
+                    <span class="text-xl">⭐</span>
+                    <span id="star-count" class="font-bold text-amber-800 text-lg">0 / 6</span>
+                </div>
+
+                <button id="toggle-sound-btn" onclick="toggleAudio()" class="w-10 h-10 bg-cyan-100 text-cyan-700 rounded-full flex items-center justify-center border-2 border-cyan-300 hover:bg-cyan-200 transition">
+                    <i class="fas fa-volume-up text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-4xl mx-auto p-4 md:p-6 flex-grow w-full flex flex-col justify-center">
+
+        <!-- MAPA NARRATIVO DE AVENTURAS (6 CAPÍTULOS) -->
+        <section id="map-view" class="flex flex-col items-center space-y-6">
+            <div class="text-center space-y-2">
+                <span class="bg-cyan-200 text-cyan-900 text-xs font-extrabold px-4 py-1.5 rounded-full border border-cyan-300 uppercase">Mapa del Tesoro Pirata</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-cyan-950">¡Acompaña a Bernabé en su Aventura!</h2>
+                <p class="text-cyan-800 text-base max-w-md mx-auto">Selecciona un capítulo para descubrir la historia y descubrir las palabras mágicas.</p>
+            </div>
+
+            <!-- CONTENEDOR DEL MAPA DEL OCÉANO -->
+            <div class="w-full bg-white/90 border-4 border-cyan-400 rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 relative z-10">
+                    
+                    <!-- CAPÍTULOS 1 AL 6 GENERADOS EN GRID -->
+                    <div id="card-cap-1" onclick="startChapter(1)" class="bg-cyan-50 border-4 border-cyan-400 rounded-3xl p-4 flex flex-col items-center text-center cursor-pointer hover:scale-105 transition shadow-md group">
+                        <div class="w-14 h-14 bg-cyan-400 text-white rounded-2xl flex items-center justify-center text-3xl mb-2 shadow group-hover:rotate-6 transition">
+                            🐙
+                        </div>
+                        <span class="text-xs font-bold text-cyan-700 uppercase">Capítulo 1</span>
+                        <h3 class="font-bold text-cyan-900 text-base">El Pulpo en el Mar</h3>
+                        <span id="badge-cap-1" class="mt-2 text-xs bg-cyan-600 text-white px-3 py-1 rounded-full font-bold">¡Jugar!</span>
+                    </div>
+
+                    <div id="card-cap-2" class="bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm">
+                        <div class="w-14 h-14 bg-slate-300 text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-2">🗺️</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Capítulo 2</span>
+                        <h3 class="font-bold text-slate-600 text-base">El Mapa Antiguo</h3>
+                        <span id="badge-cap-2" class="mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold">Bloqueado</span>
+                    </div>
+
+                    <div id="card-cap-3" class="bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm">
+                        <div class="w-14 h-14 bg-slate-300 text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-2">🐟</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Capítulo 3</span>
+                        <h3 class="font-bold text-slate-600 text-base">El Pez Amigo</h3>
+                        <span id="badge-cap-3" class="mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold">Bloqueado</span>
+                    </div>
+
+                    <div id="card-cap-4" class="bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm">
+                        <div class="w-14 h-14 bg-slate-300 text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-2">🪨</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Capítulo 4</span>
+                        <h3 class="font-bold text-slate-600 text-base">Las Rocas del Mar</h3>
+                        <span id="badge-cap-4" class="mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold">Bloqueado</span>
+                    </div>
+
+                    <div id="card-cap-5" class="bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm">
+                        <div class="w-14 h-14 bg-slate-300 text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-2">⛵</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Capítulo 5</span>
+                        <h3 class="font-bold text-slate-600 text-base">El Barco Pirata</h3>
+                        <span id="badge-cap-5" class="mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold">Bloqueado</span>
+                    </div>
+
+                    <div id="card-cap-6" class="bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm">
+                        <div class="w-14 h-14 bg-slate-300 text-slate-500 rounded-2xl flex items-center justify-center text-3xl mb-2">💎</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Capítulo 6</span>
+                        <h3 class="font-bold text-slate-600 text-base">El Tesoro Final</h3>
+                        <span id="badge-cap-6" class="mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold">Bloqueado</span>
+                    </div>
+
+                </div>
+
+                <!-- Botón de Ver Libro Completo -->
+                <div id="final-book-access" class="hidden mt-6 text-center pt-5 border-t-2 border-cyan-100">
+                    <button onclick="showFinalBook()" class="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-extrabold text-xl rounded-2xl shadow-xl transition flex items-center justify-center space-x-3 mx-auto animate-bounce border-b-4 border-amber-600">
+                        <span class="text-2xl">📖</span>
+                        <span>¡Leer el Cuento Completo de Bernabé!</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA DE CAPÍTULO ACTIVO -->
+        <section id="chapter-view" class="hidden flex-col items-center space-y-5">
+            
+            <!-- Barra Superior del Capítulo -->
+            <div class="flex items-center justify-between w-full bg-white p-4 rounded-3xl border-4 border-cyan-300 shadow-md">
+                <div class="flex items-center space-x-3">
+                    <button onclick="showMap()" class="w-10 h-10 bg-cyan-100 text-cyan-800 rounded-2xl font-bold hover:bg-cyan-200 flex items-center justify-center transition">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <span id="chap-subtitle" class="text-xs font-bold text-cyan-600 uppercase">Capítulo 1</span>
+                        <h3 id="chap-title" class="font-bold text-cyan-900 text-lg">Título del Capítulo</h3>
+                    </div>
+                </div>
+
+                <button onclick="readCurrentChapterText()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2 rounded-2xl font-bold text-sm border-2 border-amber-300 transition flex items-center space-x-2">
+                    <i class="fas fa-volume-up text-base"></i>
+                    <span class="hidden sm:inline">Escuchar Capítulo</span>
+                </button>
+            </div>
+
+            <!-- LECTURA DEL CAPÍTULO CON HUECOS ILUSTRADOS -->
+            <div class="bg-white rounded-3xl border-4 border-cyan-300 p-6 shadow-xl w-full space-y-4 text-slate-800 text-lg md:text-xl font-medium leading-relaxed">
+                <div id="chapter-text-container">
+                    <!-- Texto inyectado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- PANEL INTERACTIVO DE EJERCICIOS (LETRAS, SÍLABAS Y PALABRAS CON ILUSTRACIÓN SVG) -->
+            <div id="exercise-panel" class="w-full bg-amber-50 border-4 border-amber-300 rounded-3xl p-5 shadow-lg">
+                <!-- Inyectado por JS -->
+            </div>
+
+            <!-- BOTÓN DE AVANZAR -->
+            <button id="next-chap-btn" disabled onclick="completeCurrentChapter()" class="w-full py-4 bg-slate-300 text-slate-500 font-extrabold text-xl rounded-2xl transition cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg">
+                <span>Completar Capítulo</span>
+                <i class="fas fa-lock" id="next-chap-lock"></i>
+            </button>
+        </section>
+
+        <!-- VISTA DE LIBRO COMPLETO DE BERNABÉ -->
+        <section id="book-view" class="hidden flex-col items-center space-y-6">
+            <div class="text-center space-y-2 no-print">
+                <span class="bg-amber-100 text-amber-800 text-xs font-extrabold px-4 py-1.5 rounded-full border border-amber-300 uppercase">¡Misión Cumplida! 🏴‍☠️</span>
+                <h2 class="text-3xl font-extrabold text-cyan-950">El Gran Cuento de Bernabé</h2>
+                <p class="text-cyan-800">¡Leíste y completaste la historia entera!</p>
+            </div>
+
+            <!-- CONTENEDOR DEL LIBRO IMPRIMIBLE -->
+            <div id="printable-book" class="bg-amber-100/80 p-6 md:p-8 rounded-3xl border-8 border-amber-300 shadow-2xl w-full max-w-2xl relative">
+                <div class="bg-white p-6 rounded-2xl border-4 border-amber-400 shadow-inner space-y-6 text-left">
+                    
+                    <div class="text-center space-y-2">
+                        <div class="w-24 h-24 bg-cyan-100 rounded-full flex items-center justify-center text-6xl mx-auto shadow-md border-4 border-cyan-300 animate-float">
+                            🐙
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-cyan-900">El Pulpo Bernabé y el Tesoro</h3>
+                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Lectura Completada por un Super Lector</p>
+                    </div>
+
+                    <div id="full-book-content" class="space-y-4 text-slate-700 text-base md:text-lg font-medium leading-relaxed bg-amber-50/50 p-5 rounded-2xl border-2 border-amber-200">
+                        <!-- Historia completa -->
+                    </div>
+
+                    <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-t-2 border-slate-100 pt-4">
+                        <span>2° Básico &bull; Lectoescritura</span>
+                        <span>⭐ Cuento Pirata ⭐</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-wrap justify-center gap-4 w-full max-w-2xl no-print">
+                <button onclick="readEntireBook()" class="px-6 py-3.5 bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-lg rounded-2xl shadow-lg border-b-4 border-cyan-800 transition flex items-center space-x-2">
+                    <i class="fas fa-volume-up text-xl"></i>
+                    <span>Escuchar Todo el Cuento</span>
+                </button>
+
+                <button onclick="window.print()" class="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-2xl shadow-lg border-b-4 border-emerald-800 transition flex items-center space-x-2">
+                    <i class="fas fa-print text-xl"></i>
+                    <span>Guardar en PDF / Imprimir</span>
+                </button>
+
+                <button onclick="showMap()" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg rounded-2xl shadow-lg border-b-4 border-amber-700 transition flex items-center space-x-2">
+                    <i class="fas fa-map-marked-alt text-xl"></i>
+                    <span>Volver al Mapa</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t-2 border-cyan-200 py-3 px-4 text-center text-cyan-800 text-xs no-print">
+        <p>Las Aventuras del Pulpo Bernabé &bull; Lectoescritura Inicial para 2° Básico</p>
+    </footer>
+
+    <!-- JAVASCRIPT Y PISTAS VISUALES IMPACTANTES CON EMOJIS DE ALTA RESOLUCIÓN -->
+    <script>
+        /* ==========================================================================
+           PISTAS VISUALES DE ALTA CALIDAD CON EMOJIS GIGANTES Y DISEÑO 3D
+           ========================================================================== */
+        const VISUAL_HINTS = {
+            pulpo:  { emoji: '🐙', bg: 'from-pink-400 to-purple-500', border: 'border-purple-300', text: 'Pulpo' },
+            mar:    { emoji: '🌊', bg: 'from-cyan-400 to-blue-600', stroke: 'border-blue-300', text: 'Mar' },
+            agua:   { emoji: '💧', bg: 'from-sky-300 to-cyan-500', border: 'border-sky-200', text: 'Agua' },
+            mapa:   { emoji: '🗺️', bg: 'from-amber-300 to-yellow-500', border: 'border-yellow-200', text: 'Mapa' },
+            bote:   { emoji: '🚣', bg: 'from-orange-300 to-amber-500', border: 'border-orange-300', text: 'Bote' },
+            isla:   { emoji: '🏝️', bg: 'from-emerald-300 to-teal-500', border: 'border-emerald-300', text: 'Isla' },
+            pez:    { emoji: '🐟', bg: 'from-orange-400 to-red-500', border: 'border-orange-300', text: 'Pez' },
+            nave:   { emoji: '🚤', bg: 'from-blue-400 to-indigo-600', border: 'border-indigo-300', text: 'Nave' },
+            cueva:  { emoji: '🕳️', bg: 'from-slate-500 to-slate-700', border: 'border-slate-400', text: 'Cueva' },
+            roca:   { emoji: '🪨', bg: 'from-stone-400 to-stone-600', border: 'border-stone-300', text: 'Roca' },
+            llave:  { emoji: '🔑', bg: 'from-yellow-300 to-amber-500', border: 'border-amber-200', text: 'Llave' },
+            ola:    { emoji: '🌊', bg: 'from-blue-300 to-cyan-500', border: 'border-cyan-200', text: 'Ola' },
+            barco:  { emoji: '⛵', bg: 'from-amber-600 to-yellow-700', border: 'border-amber-400', text: 'Barco' },
+            sol:    { emoji: '☀️', bg: 'from-yellow-300 to-amber-400', border: 'border-yellow-100', text: 'Sol' },
+            vela:   { emoji: '🚩', bg: 'from-red-400 to-rose-600', border: 'border-red-300', text: 'Vela' },
+            tesoro: { emoji: '💎', bg: 'from-amber-400 to-yellow-500', border: 'border-yellow-200', text: 'Tesoro' },
+            oro:    { emoji: '🪙', bg: 'from-yellow-300 to-amber-500', border: 'border-amber-300', text: 'Oro' },
+            perla:  { emoji: '⚪', bg: 'from-slate-100 to-slate-300', border: 'border-slate-400', text: 'Perla' }
+        };
+
+        function getHintCardHTML(wordKey) {
+            const hint = VISUAL_HINTS[wordKey] || { emoji: '🧩', bg: 'from-cyan-400 to-blue-500', border: 'border-cyan-300', text: 'Pista' };
+            return `
+                <div class="relative group cursor-pointer" onclick="playSpeech('${hint.text}')" title="Haz clic para escuchar">
+                    <div class="w-28 h-28 md:w-32 md:h-32 bg-gradient-to-br ${hint.bg} rounded-3xl p-2 border-4 ${hint.border || 'border-white'} shadow-xl flex flex-col items-center justify-center transform hover:scale-110 active:scale-95 transition-all duration-300">
+                        <span class="text-6xl md:text-7xl filter drop-shadow-lg animate-float">${hint.emoji}</span>
+                    </div>
+                    <div class="absolute -bottom-2 inset-x-0 flex justify-center">
+                        <span class="bg-white/95 text-cyan-950 font-extrabold text-xs md:text-sm px-3 py-0.5 rounded-full border-2 border-amber-300 shadow uppercase tracking-wider flex items-center space-x-1">
+                            <i class="fas fa-volume-up text-amber-500 text-xs"></i>
+                            <span>${hint.text}</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* ==========================================================================
+           6 CAPÍTULOS SIMPLIFICADOS CON EJERCICIOS PASO A PASO
+           ========================================================================== */
+        const CHAPTERS = {
+            1: {
+                id: 1,
+                subtitle: "Capítulo 1",
+                title: "El Pulpo en el Mar",
+                audioText: "El pulpo Bernabé vive en el mar azul de agua dulce y limpia.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        El <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '🐙 ' + ans[1] : '🧩 Pieza 1'}</span> Bernabé es de color azul y tiene ocho brazos.
+                    </p>
+                    <p class="mb-3">
+                        Le gusta nadar en el <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '🌊 ' + ans[2] : '🧩 Pieza 2'}</span> profundo todo el día.
+                    </p>
+                    <p>
+                        Disfruta de jugar con el <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '💧 ' + ans[3] : '🧩 Pieza 3'}</span> tibia de la costa.
+                    </p>
+                `,
+                plainText: (ans) => `El ${ans[1] || 'pulpo'} Bernabé es de color azul y tiene ocho brazos. Le gusta nadar en el ${ans[2] || 'mar'} profundo todo el día. Disfruta de jugar con el ${ans[3] || 'agua'} tibia de la costa.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'letter_by_letter',
+                        wordKey: 'pulpo',
+                        target: 'PULPO',
+                        title: '1. Completa letra por letra la palabra:',
+                        hint: 'Animal marino de 8 brazos'
+                    },
+                    {
+                        slot: 2,
+                        type: 'syllable',
+                        wordKey: 'mar',
+                        prefix: '',
+                        options: ['MAR', 'SOL', 'PAN'],
+                        target: 'MAR',
+                        title: '2. ¿Qué palabra completa la oración?',
+                        hint: 'Donde nadan los peces'
+                    },
+                    {
+                        slot: 3,
+                        type: 'word_choice',
+                        wordKey: 'agua',
+                        options: ['agua', 'roca', 'arena'],
+                        target: 'agua',
+                        title: '3. Elige la palabra correcta:'
+                    }
+                ]
+            },
+            2: {
+                id: 2,
+                subtitle: "Capítulo 2",
+                title: "El Mapa Antiguo",
+                audioText: "Bernabé encontró un mapa en un bote que iba a una isla misteriosa.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        Un día encontró un <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '🗺️ ' + ans[1] : '🧩 Pieza 1'}</span> muy viejo flotando.
+                    </p>
+                    <p class="mb-3">
+                        El papel venía desde un <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '🚣 ' + ans[2] : '🧩 Pieza 2'}</span> de madera.
+                    </p>
+                    <p>
+                        El mapa mostraba el camino hacia una <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '🏝️ ' + ans[3] : '🧩 Pieza 3'}</span> secreta.
+                    </p>
+                `,
+                plainText: (ans) => `Un día encontró un ${ans[1] || 'mapa'} muy viejo flotando. El papel venía desde un ${ans[2] || 'bote'} de madera. El mapa mostraba el camino hacia una ${ans[3] || 'isla'} secreta.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'letter_by_letter',
+                        wordKey: 'mapa',
+                        target: 'MAPA',
+                        title: '1. Escribe letra por letra la palabra:',
+                        hint: 'Tiene dibujos y rutas'
+                    },
+                    {
+                        slot: 2,
+                        type: 'syllable',
+                        wordKey: 'bote',
+                        prefix: 'BO - ',
+                        options: ['TE', 'TA', 'TO'],
+                        target: 'TE',
+                        resultWord: 'bote',
+                        title: '2. Descubre la sílaba que falta (BO - __):'
+                    },
+                    {
+                        slot: 3,
+                        type: 'word_choice',
+                        wordKey: 'isla',
+                        options: ['isla', 'nube', 'casa'],
+                        target: 'isla',
+                        title: '3. Elige la palabra correcta:'
+                    }
+                ]
+            },
+            3: {
+                id: 3,
+                subtitle: "Capítulo 3",
+                title: "El Pez Amigo",
+                audioText: "Un pez amarillo ayuda a Bernabé en su nave a entrar en la cueva.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        En el camino se encontró con un <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '🐟 ' + ans[1] : '🧩 Pieza 1'}</span> amigo.
+                    </p>
+                    <p class="mb-3">
+                        Juntos subieron a una <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '🚤 ' + ans[2] : '🧩 Pieza 2'}</span> rápida para avanzar.
+                    </p>
+                    <p>
+                        Llegaron a la entrada de una oscura <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '🕳️ ' + ans[3] : '🧩 Pieza 3'}</span> de piedras.
+                    </p>
+                `,
+                plainText: (ans) => `En el camino se encontró con un ${ans[1] || 'pez'} amigo. Juntos subieron a una ${ans[2] || 'nave'} rápida para avanzar. Llegaron a la entrada de una oscura ${ans[3] || 'cueva'} de piedras.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'syllable',
+                        wordKey: 'pez',
+                        prefix: '',
+                        options: ['PEZ', 'LUZ', 'VOZ'],
+                        target: 'PEZ',
+                        title: '1. Selecciona la palabra de una sola sílaba:'
+                    },
+                    {
+                        slot: 2,
+                        type: 'letter_by_letter',
+                        wordKey: 'nave',
+                        target: 'NAVE',
+                        title: '2. Escribe letra por letra la palabra:',
+                        hint: 'Embarcación marina'
+                    },
+                    {
+                        slot: 3,
+                        type: 'word_choice',
+                        wordKey: 'cueva',
+                        options: ['cueva', 'flor', 'luna'],
+                        target: 'cueva',
+                        title: '3. Elige la palabra con la imagen:'
+                    }
+                ]
+            },
+            4: {
+                id: 4,
+                subtitle: "Capítulo 4",
+                title: "Las Rocas del Mar",
+                audioText: "Detrás de una gran roca halló la llave entre la ola de mar.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        Tuvieron que nadar alrededor de una enorme <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '🪨 ' + ans[1] : '🧩 Pieza 1'}</span>.
+                    </p>
+                    <p class="mb-3">
+                        En el suelo brillaba una <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '🔑 ' + ans[2] : '🧩 Pieza 2'}</span> dorada.
+                    </p>
+                    <p>
+                        Una gran <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '🌊 ' + ans[3] : '🧩 Pieza 3'}</span> los empujó con suavidad.
+                    </p>
+                `,
+                plainText: (ans) => `Tuvieron que nadar alrededor de una enorme ${ans[1] || 'roca'}. En el suelo brillaba una ${ans[2] || 'llave'} dorada. Una gran ${ans[3] || 'ola'} los empujó con suavidad.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'syllable',
+                        wordKey: 'roca',
+                        prefix: 'RO - ',
+                        options: ['CA', 'PA', 'MA'],
+                        target: 'CA',
+                        resultWord: 'roca',
+                        title: '1. Completa la sílaba (RO - __):'
+                    },
+                    {
+                        slot: 2,
+                        type: 'letter_by_letter',
+                        wordKey: 'llave',
+                        target: 'LLAVE',
+                        title: '2. Escribe la palabra letra por letra:',
+                        hint: 'Sirve para abrir candados'
+                    },
+                    {
+                        slot: 3,
+                        type: 'word_choice',
+                        wordKey: 'ola',
+                        options: ['ola', 'pato', 'rama'],
+                        target: 'ola',
+                        title: '3. Elige la palabra correcta:'
+                    }
+                ]
+            },
+            5: {
+                id: 5,
+                subtitle: "Capítulo 5",
+                title: "El Barco Pirata",
+                audioText: "Un gran barco pirata navegaba bajo el sol con su vela roja.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        Al salir vieron un antiguo <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '⛵ ' + ans[1] : '🧩 Pieza 1'}</span> en la orilla.
+                    </p>
+                    <p class="mb-3">
+                        En el cielo alumbraba un brillante <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '☀️ ' + ans[2] : '🧩 Pieza 2'}</span> amarillo.
+                    </p>
+                    <p>
+                        El barco se movía con su gran <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '🚩 ' + ans[3] : '🧩 Pieza 3'}</span> roja.
+                    </p>
+                `,
+                plainText: (ans) => `Al salir vieron un antiguo ${ans[1] || 'barco'} en la orilla. En el cielo alumbraba un brillante ${ans[2] || 'sol'} amarillo. El barco se movía con su gran ${ans[3] || 'vela'} roja.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'letter_by_letter',
+                        wordKey: 'barco',
+                        target: 'BARCO',
+                        title: '1. Escribe letra por letra:'
+                    },
+                    {
+                        slot: 2,
+                        type: 'word_choice',
+                        wordKey: 'sol',
+                        options: ['sol', 'mar', 'sal'],
+                        target: 'sol',
+                        title: '2. ¿Qué brilla en el cielo?'
+                    },
+                    {
+                        slot: 3,
+                        type: 'syllable',
+                        wordKey: 'vela',
+                        prefix: 'VE - ',
+                        options: ['LA', 'NA', 'SA'],
+                        target: 'LA',
+                        resultWord: 'vela',
+                        title: '3. Descubre la sílaba que falta (VE - __):'
+                    }
+                ]
+            },
+            6: {
+                id: 6,
+                subtitle: "Capítulo 6",
+                title: "El Tesoro Final",
+                audioText: "Bernabé abrió el tesoro repleto de monedas de oro y una perla mística.",
+                answers: { 1: null, 2: null, 3: null },
+                template: (ans) => `
+                    <p class="mb-3">
+                        Bernabé abrió el cofre del <span class="puzzle-slot ${ans[1] ? 'filled' : ''}">${ans[1] ? '💎 ' + ans[1] : '🧩 Pieza 1'}</span> con su llave.
+                    </p>
+                    <p class="mb-3">
+                        Adentro había monedas brillando de <span class="puzzle-slot ${ans[2] ? 'filled' : ''}">${ans[2] ? '🪙 ' + ans[2] : '🧩 Pieza 2'}</span> puro.
+                    </p>
+                    <p>
+                        Y en el centro descubrió una hermosa <span class="puzzle-slot ${ans[3] ? 'filled' : ''}">${ans[3] ? '⚪ ' + ans[3] : '🧩 Pieza 3'}</span> blanca.
+                    </p>
+                `,
+                plainText: (ans) => `Bernabé abrió el cofre del ${ans[1] || 'tesoro'} con su llave. Adentro había monedas brillando de ${ans[2] || 'oro'} puro. Y en el centro descubrió una hermosa ${ans[3] || 'perla'} blanca.`,
+                exercises: [
+                    {
+                        slot: 1,
+                        type: 'letter_by_letter',
+                        wordKey: 'tesoro',
+                        target: 'TESORO',
+                        title: '1. Escribe la palabra principal:'
+                    },
+                    {
+                        slot: 2,
+                        type: 'syllable',
+                        wordKey: 'oro',
+                        prefix: 'O - ',
+                        options: ['RO', 'LO', 'SO'],
+                        target: 'RO',
+                        resultWord: 'oro',
+                        title: '2. Sílaba final de (O - __):'
+                    },
+                    {
+                        slot: 3,
+                        type: 'word_choice',
+                        wordKey: 'perla',
+                        options: ['perla', 'piña', 'pluma'],
+                        target: 'perla',
+                        title: '3. Elige la palabra ilustrada:'
+                    }
+                ]
+            }
+        };
+
+        /* ==========================================================================
+           ESTADO GLOBAL
+           ========================================================================== */
+        let state = {
+            unlockedChapter: 1,
+            currentChapter: 1,
+            completedChapters: [],
+            soundEnabled: true,
+            currentInputLetters: []
+        };
+
+        /* ==========================================================================
+           SONIDOS DE EFECTOS
+           ========================================================================== */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(350, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.04);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+                osc.start(now);
+                osc.stop(now + 0.04);
+            } else if (type === 'win') {
+                [350, 480, 580, 750].forEach((freq, idx) => {
+                    const subOsc = audioCtx.createOscillator();
+                    const subGain = audioCtx.createGain();
+                    subOsc.connect(subGain);
+                    subGain.connect(audioCtx.destination);
+                    subOsc.frequency.setValueAtTime(freq, now + idx * 0.07);
+                    subGain.gain.setValueAtTime(0.12, now + idx * 0.07);
+                    subGain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.07 + 0.18);
+                    subOsc.start(now + idx * 0.07);
+                    subOsc.stop(now + idx * 0.07 + 0.18);
+                });
+            }
+        }
+
+        function toggleAudio() {
+            state.soundEnabled = !state.soundEnabled;
+            const btn = document.getElementById('toggle-sound-btn');
+            btn.innerHTML = state.soundEnabled ? '<i class="fas fa-volume-up text-lg"></i>' : '<i class="fas fa-volume-mute text-lg"></i>';
+        }
+
+        function playSpeech(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.85;
+                utterance.pitch = 1.05;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* ==========================================================================
+           NAVEGACIÓN Y MAPA (6 CAPÍTULOS)
+           ========================================================================== */
+        function showMap() {
+            playSound('click');
+            document.getElementById('map-view').classList.remove('hidden');
+            document.getElementById('chapter-view').classList.add('hidden');
+            document.getElementById('book-view').classList.add('hidden');
+            updateMapUI();
+        }
+
+        function updateMapUI() {
+            document.getElementById('star-count').textContent = `${state.completedChapters.length} / 6`;
+
+            [1, 2, 3, 4, 5, 6].forEach(num => {
+                const card = document.getElementById(`card-cap-${num}`);
+                const badge = document.getElementById(`badge-cap-${num}`);
+
+                if (state.completedChapters.includes(num)) {
+                    card.className = "bg-amber-50 border-4 border-amber-400 rounded-3xl p-4 flex flex-col items-center text-center cursor-pointer hover:scale-105 transition shadow-md group";
+                    badge.className = "mt-2 text-xs bg-amber-500 text-white px-3 py-1 rounded-full font-bold";
+                    badge.textContent = "⭐ Completado";
+                    card.onclick = () => startChapter(num);
+                } else if (num <= state.unlockedChapter) {
+                    card.className = "bg-cyan-50 border-4 border-cyan-400 rounded-3xl p-4 flex flex-col items-center text-center cursor-pointer hover:scale-105 transition shadow-md group animate-pulse";
+                    badge.className = "mt-2 text-xs bg-cyan-600 text-white px-3 py-1 rounded-full font-bold";
+                    badge.textContent = "¡Jugar!";
+                    card.onclick = () => startChapter(num);
+                } else {
+                    card.className = "bg-slate-100 border-4 border-slate-300 rounded-3xl p-4 flex flex-col items-center text-center opacity-60 cursor-not-allowed transition shadow-sm";
+                    badge.className = "mt-2 text-xs bg-slate-300 text-slate-600 px-3 py-1 rounded-full font-bold";
+                    badge.textContent = "Bloqueado";
+                    card.onclick = null;
+                }
+            });
+
+            if (state.completedChapters.length === 6) {
+                document.getElementById('final-book-access').classList.remove('hidden');
+            }
+        }
+
+        /* ==========================================================================
+           LÓGICA DE CAPÍTULO Y RENDERIZADO DE DESAFÍOS
+           ========================================================================== */
+        function startChapter(chapNum) {
+            playSound('click');
+            state.currentChapter = chapNum;
+            state.currentInputLetters = [];
+
+            document.getElementById('map-view').classList.add('hidden');
+            document.getElementById('chapter-view').classList.remove('hidden');
+            document.getElementById('chapter-view').classList.add('flex');
+
+            const chapData = CHAPTERS[chapNum];
+            document.getElementById('chap-subtitle').textContent = chapData.subtitle;
+            document.getElementById('chap-title').textContent = chapData.title;
+
+            renderChapterText();
+            renderExercises();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderChapterText() {
+            const chapData = CHAPTERS[state.currentChapter];
+            const container = document.getElementById('chapter-text-container');
+            container.innerHTML = chapData.template(chapData.answers);
+
+            const allFilled = Object.values(chapData.answers).every(val => val !== null && val.trim() !== '');
+            const nextBtn = document.getElementById('next-chap-btn');
+            const lockIcon = document.getElementById('next-chap-lock');
+
+            if (allFilled) {
+                nextBtn.disabled = false;
+                nextBtn.className = "w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xl rounded-2xl transition cursor-pointer flex items-center justify-center space-x-2 shadow-xl animate-pulse";
+                lockIcon.className = "fas fa-star";
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.className = "w-full py-4 bg-slate-300 text-slate-500 font-extrabold text-xl rounded-2xl transition cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg";
+                lockIcon.className = "fas fa-lock";
+            }
+        }
+
+        function renderExercises() {
+            const chapData = CHAPTERS[state.currentChapter];
+            const panel = document.getElementById('exercise-panel');
+            panel.innerHTML = '';
+
+            let currentEx = null;
+            for (let ex of chapData.exercises) {
+                if (!chapData.answers[ex.slot]) {
+                    currentEx = ex;
+                    break;
+                }
+            }
+
+            if (!currentEx) {
+                panel.innerHTML = `
+                    <div class="text-center py-2 space-y-2">
+                        <div class="text-4xl animate-bounce">⭐</div>
+                        <h4 class="font-bold text-emerald-800 text-xl">¡Completaste las 3 piezas del capítulo!</h4>
+                        <p class="text-sm text-slate-600">Haz clic en el botón verde de abajo para guardar tu avance.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Pista visual enriquecida con emoji gigante y tarjeta 3D
+            const hintCardHTML = getHintCardHTML(currentEx.wordKey);
+
+            if (currentEx.type === 'letter_by_letter') {
+                const targetLen = currentEx.target.length;
+                const filledBoxes = [];
+                for (let i = 0; i < targetLen; i++) {
+                    const char = state.currentInputLetters[i] || '';
+                    filledBoxes.push(`<div class="letter-box ${char ? 'filled' : ''}">${char}</div>`);
+                }
+
+                // Generar letras aleatorias incluyendo las necesarias
+                const alphabet = 'ABCDEFGHIJLMNOPQRSTUVXYZ';
+                let keyboardLetters = currentEx.target.split('');
+                while (keyboardLetters.length < 8) {
+                    const randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+                    if (!keyboardLetters.includes(randomChar)) keyboardLetters.push(randomChar);
+                }
+                keyboardLetters.sort();
+
+                panel.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex flex-col items-center justify-center">
+                            ${hintCardHTML}
+                        </div>
+                        <div class="flex-grow space-y-3 w-full text-center md:text-left">
+                            <span class="text-xs font-bold text-amber-800 bg-amber-200 px-3 py-1 rounded-full uppercase">Pieza ${currentEx.slot} &bull; Letra por Letra</span>
+                            <h4 class="font-bold text-slate-800 text-lg md:text-xl">${currentEx.title}</h4>
+                            
+                            <!-- Casillas -->
+                            <div class="flex space-x-2 justify-center md:justify-start my-2">
+                                ${filledBoxes.join('')}
+                            </div>
+
+                            <!-- Teclado de Botones -->
+                            <div class="flex flex-wrap justify-center md:justify-start gap-2 pt-2">
+                                ${keyboardLetters.map(letra => `
+                                    <button onclick="pressLetter('${letra}', '${currentEx.target}', ${currentEx.slot})" class="w-12 h-12 bg-white hover:bg-cyan-100 border-3 border-cyan-400 font-extrabold text-cyan-900 rounded-2xl text-2xl shadow-md hover:scale-105 active:scale-95 transition">
+                                        ${letra}
+                                    </button>
+                                `).join('')}
+                                <button onclick="clearLetters()" class="px-4 h-12 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-2xl text-base border-2 border-rose-300 shadow-md transition flex items-center justify-center">
+                                    <i class="fas fa-backspace"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentEx.type === 'syllable') {
+                panel.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex flex-col items-center justify-center">
+                            ${hintCardHTML}
+                        </div>
+                        <div class="flex-grow space-y-3 w-full text-center md:text-left">
+                            <span class="text-xs font-bold text-amber-800 bg-amber-200 px-3 py-1 rounded-full uppercase">Pieza ${currentEx.slot} &bull; Descubre la Sílaba</span>
+                            <h4 class="font-bold text-slate-800 text-lg md:text-xl">${currentEx.title}</h4>
+                            
+                            <div class="grid grid-cols-3 gap-3 pt-2">
+                                ${currentEx.options.map(opt => `
+                                    <button onclick="selectSyllable('${opt}', '${currentEx.target}', ${currentEx.slot}, '${currentEx.resultWord || opt}')" class="bg-white hover:bg-amber-100 border-3 border-amber-400 p-4 rounded-2xl font-extrabold text-2xl text-amber-900 shadow-md transition hover:scale-105 active:scale-95">
+                                        ${currentEx.prefix || ''}${opt}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (currentEx.type === 'word_choice') {
+                panel.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="flex flex-col items-center justify-center">
+                            ${hintCardHTML}
+                        </div>
+                        <div class="flex-grow space-y-3 w-full text-center md:text-left">
+                            <span class="text-xs font-bold text-amber-800 bg-amber-200 px-3 py-1 rounded-full uppercase">Pieza ${currentEx.slot} &bull; Vocabulario</span>
+                            <h4 class="font-bold text-slate-800 text-lg md:text-xl">${currentEx.title}</h4>
+                            
+                            <div class="grid grid-cols-3 gap-3 pt-2">
+                                ${currentEx.options.map(word => `
+                                    <button onclick="selectWordChoice('${word}', '${currentEx.target}', ${currentEx.slot})" class="bg-white hover:bg-cyan-100 border-3 border-cyan-400 p-4 rounded-2xl font-extrabold text-xl text-cyan-900 shadow-md transition hover:scale-105 active:scale-95">
+                                        ${word}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        /* ==========================================================================
+           LÓGICA DE INTERACCIÓN DE TECLADOS Y RESPUESTAS
+           ========================================================================== */
+        function pressLetter(letter, targetWord, slotNum) {
+            playSound('click');
+            if (state.currentInputLetters.length < targetWord.length) {
+                state.currentInputLetters.push(letter);
+                renderExercises();
+
+                const currentString = state.currentInputLetters.join('');
+                if (currentString === targetWord) {
+                    setTimeout(() => {
+                        playSound('win');
+                        CHAPTERS[state.currentChapter].answers[slotNum] = targetWord.toLowerCase();
+                        state.currentInputLetters = [];
+                        renderChapterText();
+                        renderExercises();
+                    }, 200);
+                } else if (state.currentInputLetters.length === targetWord.length) {
+                    playSpeech("Casi lo logras. Revisa las letras e inténtalo de nuevo.");
+                }
+            }
+        }
+
+        function clearLetters() {
+            playSound('click');
+            state.currentInputLetters = [];
+            renderExercises();
+        }
+
+        function selectSyllable(selected, target, slotNum, finalWord) {
+            if (selected === target) {
+                playSound('win');
+                CHAPTERS[state.currentChapter].answers[slotNum] = finalWord.toLowerCase();
+                renderChapterText();
+                renderExercises();
+            } else {
+                playSound('click');
+                playSpeech(`Prueba otra opción`);
+            }
+        }
+
+        function selectWordChoice(selected, target, slotNum) {
+            if (selected.toLowerCase() === target.toLowerCase()) {
+                playSound('win');
+                CHAPTERS[state.currentChapter].answers[slotNum] = selected;
+                renderChapterText();
+                renderExercises();
+            } else {
+                playSound('click');
+                playSpeech(`Observa bien la imagen de pista`);
+            }
+        }
+
+        function readCurrentChapterText() {
+            const chapData = CHAPTERS[state.currentChapter];
+            const textToRead = chapData.plainText(chapData.answers);
+            playSpeech(textToRead);
+        }
+
+        function completeCurrentChapter() {
+            playSound('win');
+            if (!state.completedChapters.includes(state.currentChapter)) {
+                state.completedChapters.push(state.currentChapter);
+            }
+
+            if (state.currentChapter < 6) {
+                state.unlockedChapter = Math.max(state.unlockedChapter, state.currentChapter + 1);
+            }
+
+            showMap();
+        }
+
+        /* ==========================================================================
+           VISTA DEL LIBRO COMPLETO (6 CAPÍTULOS)
+           ========================================================================== */
+        function showFinalBook() {
+            playSound('win');
+            document.getElementById('map-view').classList.add('hidden');
+            document.getElementById('chapter-view').classList.add('hidden');
+            document.getElementById('book-view').classList.remove('hidden');
+            document.getElementById('book-view').classList.add('flex');
+
+            const container = document.getElementById('full-book-content');
+            container.innerHTML = '';
+
+            [1, 2, 3, 4, 5, 6].forEach(num => {
+                const chap = CHAPTERS[num];
+                const text = chap.plainText(chap.answers);
+
+                container.innerHTML += `
+                    <div class="border-b-2 border-amber-200 pb-3 last:border-0">
+                        <h4 class="font-bold text-cyan-900 text-base mb-1">${chap.subtitle}: ${chap.title}</h4>
+                        <p class="text-slate-700">${text}</p>
+                    </div>
+                `;
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function readEntireBook() {
+            let fullText = "El Pulpo Bernabé y el Tesoro. ";
+            [1, 2, 3, 4, 5, 6].forEach(num => {
+                const chap = CHAPTERS[num];
+                fullText += `${chap.subtitle}. ${chap.plainText(chap.answers)} `;
+            });
+            playSpeech(fullText);
+        }
+    </script>
+</body>
+</html>
